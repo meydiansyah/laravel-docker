@@ -3,13 +3,9 @@ FROM php:8.0-fpm
 # Set working directory
 WORKDIR /var/www/html
 
-# Install nodejs
-RUN curl -sL https://deb.nodesource.com/setup_17.x -o nodesource_setup.sh \
-    && bash nodesource_setup.sh \
-    && apt-get -y --force-yes install nodejs
-
 # Install dependencies
 RUN apt-get update && apt-get install -y \
+	apt-utils \
     build-essential \
     libonig-dev \
     libzip-dev \
@@ -27,6 +23,11 @@ RUN apt-get update && apt-get install -y \
     libxrender1 \
     libssl-dev \
     curl
+
+# Install nodejs
+RUN curl -sL https://deb.nodesource.com/setup_17.x -o nodesource_setup.sh \
+    && bash nodesource_setup.sh \
+    && apt-get -y --force-yes install nodejs
 
 # Clear cache
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
