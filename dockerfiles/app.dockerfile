@@ -67,4 +67,4 @@ RUN echo "php_admin_flag[log_errors] = on" >> /usr/local/etc/php-fpm.d/www.conf
 # Expose port 9000 and start php-fpm server
 EXPOSE 9000
 
-CMD ["php-fpm", "-y", "/usr/local/etc/php-fcm.conf", "-R"]
+CMD ["php-fpm", "-y", "/usr/local/etc/php-fpm.conf", "-R"]
