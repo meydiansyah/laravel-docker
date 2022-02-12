@@ -1,0 +1,62 @@
+version: "3.8"
+
+networks:
+  jait-net: 
+    driver: bridge
+
+services:
+  app:
+    build:
+      context: ./dockerfiles
+      dockerfile: app.dockerfile
+    restart: unless-stopped
+    tty: true
+    working_dir: /var/www/jait
+    volumes:
+      - ./web:/var/www/jait:delegated
+    depends_on:
+      - webserver
+    networks:
+      - jait-net
+
+  webserver:
+    build:
+      context: ./dockerfiles
+      dockerfile: nginx.dockerfile
+    container_name: webserver
+    ports:
+      - 80:80
+    volumes:
+      - "./src:/var/www/jait"
+      - "./nginx/logs:/var/log/nginx"
+      - "./nginx/nginx.conf:/etc/nginx/nginx.conf"
+      - "./nginx/sites/backend.conf:/etc/nginx/conf.d/backend.conf"
+    networks:
+      - jait-net
+
+  database:
+    image: mysql
+    restart: unless-stopped
+    tty: true
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_DATABASE: "jait"
+      MYSQL_USER: "jait_dba"
+      MYSQL_PASSWORD: "jait_dba_pass123"
+      MYSQL_ROOT_PASSWORD: "jait_dba_pass123"
+    volumes:
+      - "./mysql/data:/var/lib/mysql"
+      - "./mysql/my.cnf:/etc/mysql/my.cnf"
+    networks:
+      - jait-net
+
+  redis:
+    image: redis:alpine
+    container_name: redis
+    restart: unless-stopped
+    ports:
+      - 6379:6379
+    networks:
+      - jait-net
+
